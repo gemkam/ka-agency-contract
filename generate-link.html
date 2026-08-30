@@ -64,6 +64,25 @@
                 </select>
             </div>
 
+            <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2 border-t border-white/10">First Party Sign-off (K.A. Agency)</h3>
+            <p class="text-xs text-gray-500 -mt-3">Sign here before sending the link. Your signature becomes part of the final contract the client signs.</p>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Representative Name *</label>
+                <input type="text" id="agencyRepInput" placeholder="Type your full name to sign as K.A. Agency" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600 italic">
+            </div>
+
+            <label class="flex items-start space-x-3 cursor-pointer">
+                <input type="checkbox" id="agencyAgree" class="accent-cyan-400 mt-1">
+                <span class="text-sm text-gray-300">I confirm I am signing this agreement on behalf of K.A. Agency, and the terms set above are correct.</span>
+            </label>
+            <p id="agencySignStatus" class="text-xs text-amber-400"></p>
+
+            <div class="pt-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Client Email (optional, to send the link directly)</label>
+                <input type="email" id="clientEmailInput" placeholder="client@example.com" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
             <div class="pt-2">
                 <label class="block text-sm font-medium text-gray-300 mb-1">Generated Link</label>
                 <div class="flex gap-2">
@@ -73,6 +92,9 @@
                     </button>
                 </div>
                 <p id="copyStatus" class="text-xs text-gray-500 mt-1 h-4"></p>
+                <a id="emailLinkBtn" href="#" class="inline-flex items-center gap-2 mt-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">
+                    <i class="fa-solid fa-envelope"></i>Open in your email app, addressed to the client
+                </a>
             </div>
 
         </div>
@@ -88,9 +110,14 @@
         const mrrInput = document.getElementById('mrrInput');
         const daysInput = document.getElementById('daysInput');
         const typeSelect = document.getElementById('typeSelect');
+        const agencyRepInput = document.getElementById('agencyRepInput');
+        const agencyAgree = document.getElementById('agencyAgree');
+        const agencySignStatus = document.getElementById('agencySignStatus');
+        const clientEmailInput = document.getElementById('clientEmailInput');
         const generatedLink = document.getElementById('generatedLink');
         const copyBtn = document.getElementById('copyBtn');
         const copyStatus = document.getElementById('copyStatus');
+        const emailLinkBtn = document.getElementById('emailLinkBtn');
 
         const tierSuggestions = {
             1: { budget: 10000, fee: 1500, mrr: 1000 },
@@ -101,6 +128,8 @@
             6: { budget: 60000, fee: 6000, mrr: 7000 },
             7: { budget: 65000, fee: 8000, mrr: 10000 }
         };
+
+        let fixedAgencySignedAt = null;
 
         function updateLink() {
             const params = new URLSearchParams();
@@ -117,11 +146,43 @@
             if (daysInput.value) params.set('days', daysInput.value);
             if (typeSelect.value) params.set('type', typeSelect.value);
 
+            const repName = agencyRepInput.value.trim();
+            const agreed = agencyAgree.checked;
+
+            if (!repName || !agreed) {
+                fixedAgencySignedAt = null;
+                generatedLink.value = '';
+                agencySignStatus.textContent = 'Type your name and check the confirmation box above to generate a sendable link.';
+                return;
+            }
+
+            if (!fixedAgencySignedAt) {
+                fixedAgencySignedAt = new Date().toISOString();
+            }
+
+            agencySignStatus.textContent = '';
+            params.set('agencyRep', repName);
+            params.set('agencySignedAt', fixedAgencySignedAt);
+
             const query = params.toString();
             generatedLink.value = CONTRACT_SITE_URL + (query ? '?' + query : '');
+
+            const clientEmail = clientEmailInput.value.trim();
+            if (clientEmail) {
+                const subject = encodeURIComponent('Your K.A. Agency Website Contract');
+                const body = encodeURIComponent(
+                    `Hello,\n\nPlease review and sign your website development contract using the link below:\n\n${generatedLink.value}\n\nOnce signed, you'll get an emailed copy for your own records.\n\nThank you,\nK.A. Agency`
+                );
+                emailLinkBtn.href = `mailto:${clientEmail}?subject=${subject}&body=${body}`;
+                emailLinkBtn.classList.remove('hidden');
+            } else {
+                emailLinkBtn.classList.add('hidden');
+            }
         }
 
-        [tierSelect, budgetInput, feeInput, mrrInput, daysInput, typeSelect].forEach(el => {
+        clientEmailInput.addEventListener('input', updateLink);
+
+        [tierSelect, budgetInput, feeInput, mrrInput, daysInput, typeSelect, agencyRepInput, agencyAgree].forEach(el => {
             el.addEventListener('input', updateLink);
             el.addEventListener('change', updateLink);
         });
