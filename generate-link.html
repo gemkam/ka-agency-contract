@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.A. AGENCY - Generate Contract Link (Internal)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-black text-white py-10 px-4 sm:px-6 lg:px-8 min-h-screen">
+
+    <div class="max-w-xl mx-auto bg-gray-950 p-8 rounded-2xl shadow-2xl border-2 border-cyan-400/30">
+
+        <div class="text-center mb-8 border-b border-white/10 pb-6">
+            <h1 class="text-2xl font-extrabold tracking-wide text-white">K.A. AGENCY</h1>
+            <p class="text-sm font-semibold text-gray-400 uppercase mt-1">Generate a Contract Link</p>
+            <p class="text-xs text-gray-500 mt-3">Internal tool — not for clients. Set the agreed terms below, then copy the link and send it to the client.</p>
+        </div>
+
+        <div class="space-y-5">
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Package (Budget Range)</label>
+                <select id="tierSelect" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                    <option value="" class="bg-black">-- Let client choose (don't lock) --</option>
+                    <option value="1" class="bg-black">1. PKR 5,000 to PKR 15,000</option>
+                    <option value="2" class="bg-black">2. PKR 15,000 to PKR 25,000</option>
+                    <option value="3" class="bg-black">3. PKR 25,000 to PKR 35,000</option>
+                    <option value="4" class="bg-black">4. PKR 35,000 to PKR 45,000</option>
+                    <option value="5" class="bg-black">5. PKR 45,000 to PKR 55,000</option>
+                    <option value="6" class="bg-black">6. PKR 55,000 to PKR 65,000</option>
+                    <option value="7" class="bg-black">7. PKR 65,000+ Custom Enterprise</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Total Budget (PKR)</label>
+                    <input type="number" id="budgetInput" placeholder="e.g. 30000" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Initial Fee (PKR)</label>
+                    <input type="number" id="feeInput" placeholder="e.g. 2800" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Monthly MRR (PKR)</label>
+                    <input type="number" id="mrrInput" placeholder="e.g. 3000" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Completion (business days)</label>
+                    <input type="number" id="daysInput" placeholder="e.g. 12" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Type of Website</label>
+                <select id="typeSelect" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                    <option value="" class="bg-black">-- Let client choose (don't lock) --</option>
+                    <option value="Business / Corporate Website" class="bg-black">Business / Corporate Website</option>
+                    <option value="E-Commerce Store" class="bg-black">E-Commerce Store</option>
+                    <option value="Portfolio / Personal Website" class="bg-black">Portfolio / Personal Website</option>
+                    <option value="Landing Page" class="bg-black">Landing Page</option>
+                    <option value="Other" class="bg-black">Other</option>
+                </select>
+            </div>
+
+            <div class="pt-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Generated Link</label>
+                <div class="flex gap-2">
+                    <input type="text" id="generatedLink" readonly class="flex-1 min-w-0 px-4 py-2 bg-black border border-cyan-400/40 text-cyan-300 rounded-lg text-sm">
+                    <button id="copyBtn" type="button" class="bg-cyan-400 text-black font-bold px-4 rounded-lg hover:bg-cyan-300 transition shrink-0">
+                        <i class="fa-solid fa-copy"></i>
+                    </button>
+                </div>
+                <p id="copyStatus" class="text-xs text-gray-500 mt-1 h-4"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANT: set this to your live contract-signing site's URL once deployed.
+        const CONTRACT_SITE_URL = window.location.href.replace(/generate-link\.html.*$/, '');
+
+        const tierSelect = document.getElementById('tierSelect');
+        const budgetInput = document.getElementById('budgetInput');
+        const feeInput = document.getElementById('feeInput');
+        const mrrInput = document.getElementById('mrrInput');
+        const daysInput = document.getElementById('daysInput');
+        const typeSelect = document.getElementById('typeSelect');
+        const generatedLink = document.getElementById('generatedLink');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyStatus = document.getElementById('copyStatus');
+
+        const tierSuggestions = {
+            1: { budget: 10000, fee: 1500, mrr: 1000 },
+            2: { budget: 20000, fee: 2000, mrr: 1500 },
+            3: { budget: 30000, fee: 2500, mrr: 2500 },
+            4: { budget: 40000, fee: 3500, mrr: 3500 },
+            5: { budget: 50000, fee: 4500, mrr: 5000 },
+            6: { budget: 60000, fee: 6000, mrr: 7000 },
+            7: { budget: 65000, fee: 8000, mrr: 10000 }
+        };
+
+        function updateLink() {
+            const params = new URLSearchParams();
+            if (tierSelect.value) {
+                params.set('tier', tierSelect.value);
+                const s = tierSuggestions[tierSelect.value];
+                if (!budgetInput.value) budgetInput.placeholder = 'e.g. ' + s.budget;
+                if (!feeInput.value) feeInput.placeholder = 'e.g. ' + s.fee;
+                if (!mrrInput.value) mrrInput.placeholder = 'e.g. ' + s.mrr;
+            }
+            if (budgetInput.value) params.set('budget', budgetInput.value);
+            if (feeInput.value) params.set('fee', feeInput.value);
+            if (mrrInput.value) params.set('mrr', mrrInput.value);
+            if (daysInput.value) params.set('days', daysInput.value);
+            if (typeSelect.value) params.set('type', typeSelect.value);
+
+            const query = params.toString();
+            generatedLink.value = CONTRACT_SITE_URL + (query ? '?' + query : '');
+        }
+
+        [tierSelect, budgetInput, feeInput, mrrInput, daysInput, typeSelect].forEach(el => {
+            el.addEventListener('input', updateLink);
+            el.addEventListener('change', updateLink);
+        });
+
+        copyBtn.addEventListener('click', async function() {
+            try {
+                await navigator.clipboard.writeText(generatedLink.value);
+                copyStatus.textContent = 'Copied to clipboard!';
+                setTimeout(() => { copyStatus.textContent = ''; }, 2000);
+            } catch (err) {
+                generatedLink.select();
+                copyStatus.textContent = 'Press Ctrl+C / Cmd+C to copy.';
+            }
+        });
+
+        updateLink();
+    </script>
+</body>
+</html>
