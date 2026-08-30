@@ -42,9 +42,12 @@
             <i class="fa-solid fa-circle-check text-5xl text-cyan-400 mb-4"></i>
             <h2 class="text-2xl font-bold text-white mb-2">Contract Signed</h2>
             <p id="signedTimestamp" class="text-sm text-gray-400 mb-1"></p>
+            <a id="downloadLink" href="#" class="inline-block mt-4 bg-cyan-400 text-black font-bold py-2.5 px-6 rounded-xl hover:bg-cyan-300 transition duration-200 shadow-lg shadow-cyan-500/35">
+                <i class="fa-solid fa-download mr-2"></i>Download Signed Contract PDF
+            </a>
             <p class="text-xs text-gray-500 max-w-md mx-auto mt-4">
-                A copy of the signed contract has been downloaded to your device, and a record has been sent to K.A. Agency.
-                Please keep the downloaded PDF for your own records.
+                A copy of the signed contract should have downloaded automatically. If it didn't, use the button above.
+                A record has also been sent to K.A. Agency. Please keep the downloaded PDF for your own records.
             </p>
         </div>
 
@@ -383,6 +386,83 @@
         agreedBudget.addEventListener('input', recalcBalance);
         agreedInitialFee.addEventListener('input', recalcBalance);
 
+        // ---------------- Agency presets via URL (so the client isn't left guessing) ----------------
+        // Example link an agency staff member would send a client:
+        // https://your-site.vercel.app/?tier=3&fee=2800&mrr=3000&days=12&type=E-Commerce%20Store
+        // tier = 1..7 (matches the 7 budget radio options in order), fee/mrr/budget override the
+        // tier's suggested numbers, days = completion days, type = must match one of the website
+        // type option values exactly.
+        const tierKeysInOrder = [
+            "PKR 5,000 to PKR 15,000",
+            "PKR 15,000 to PKR 25,000",
+            "PKR 25,000 to PKR 35,000",
+            "PKR 35,000 to PKR 45,000",
+            "PKR 45,000 to PKR 55,000",
+            "PKR 55,000 to PKR 65,000",
+            "PKR 65,000+ Custom Enterprise"
+        ];
+
+        function lockField(el) {
+            el.disabled = true;
+            el.classList.add('opacity-60', 'cursor-not-allowed');
+        }
+
+        function applyAgencyPresetsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const tierNum = parseInt(params.get('tier'), 10);
+            const overrideBudget = params.get('budget');
+            const overrideFee = params.get('fee');
+            const overrideMRR = params.get('mrr');
+            const overrideDays = params.get('days');
+            const overrideType = params.get('type');
+            let anyLocked = false;
+
+            if (tierNum >= 1 && tierNum <= 7) {
+                const key = tierKeysInOrder[tierNum - 1];
+                const radio = document.querySelector(`input[name="budget"][value="${CSS.escape(key)}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+                document.querySelectorAll('input[name="budget"]').forEach(lockField);
+                anyLocked = true;
+            }
+
+            if (overrideBudget) agreedBudget.value = overrideBudget;
+            if (overrideFee) agreedInitialFee.value = overrideFee;
+            if (overrideMRR) agreedMRR.value = overrideMRR;
+            recalcBalance();
+
+            if (tierNum || overrideBudget) { lockField(agreedBudget); anyLocked = true; }
+            if (tierNum || overrideFee) { lockField(agreedInitialFee); anyLocked = true; }
+            if (tierNum || overrideMRR) { lockField(agreedMRR); anyLocked = true; }
+
+            if (overrideDays) {
+                const daysField = document.getElementById('completionDays');
+                daysField.value = overrideDays;
+                lockField(daysField);
+                anyLocked = true;
+            }
+
+            if (overrideType) {
+                const typeField = document.getElementById('websiteType');
+                for (const opt of typeField.options) {
+                    if (opt.value === overrideType) { typeField.value = overrideType; break; }
+                }
+                lockField(typeField);
+                anyLocked = true;
+            }
+
+            if (anyLocked) {
+                const note = document.createElement('p');
+                note.className = 'text-xs text-cyan-400 mt-2';
+                note.innerHTML = '<i class="fa-solid fa-lock mr-1"></i>These terms were set by K.A. Agency for this agreement and can\'t be changed here. Contact K.A. Agency if something looks wrong.';
+                tierInfo.insertAdjacentElement('afterend', note);
+            }
+        }
+
+        applyAgencyPresetsFromURL();
+
         // ---------------- Submit / Sign ----------------
         document.getElementById('contractForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -426,6 +506,7 @@
             btnSubmit.textContent = 'Submitting...';
 
             try {
+                const clientNameForFile = contractData.clientName.replace(/\s+/g, '_') || 'client';
                 const pdfDataUri = generateContractPDF(contractData);
                 const pdfBase64 = pdfDataUri.split(',')[1];
 
@@ -442,7 +523,7 @@
                     console.error('Network error sending contract record:', err);
                 }
 
-                showSignedPanel(new Date(contractData.signedAt));
+                showSignedPanel(new Date(contractData.signedAt), pdfDataUri, `KA_Agency_Contract_${clientNameForFile}.pdf`);
             } finally {
                 btnSubmit.disabled = false;
                 btnSubmit.classList.remove('opacity-60', 'cursor-not-allowed');
@@ -450,11 +531,19 @@
             }
         });
 
-        function showSignedPanel(date) {
+        function showSignedPanel(date, pdfDataUri, filename) {
             document.getElementById('contractForm').classList.add('hidden');
             document.getElementById('signedPanel').classList.remove('hidden');
             document.getElementById('signedTimestamp').textContent =
                 'Signed on ' + date.toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' });
+
+            const downloadLink = document.getElementById('downloadLink');
+            if (pdfDataUri) {
+                downloadLink.href = pdfDataUri;
+                downloadLink.download = filename || 'KA_Agency_Contract.pdf';
+            } else {
+                downloadLink.classList.add('hidden');
+            }
         }
 
         // ---------------- PDF generation ----------------
