@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K.A. AGENCY - Contract Signing</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes neonBluePulse {
+            0%, 100% {
+                border-color: rgba(0, 242, 254, 0.4);
+                box-shadow: 0 0 15px rgba(0, 242, 254, 0.2), inset 0 0 10px rgba(0, 242, 254, 0.1);
+            }
+            50% {
+                border-color: rgba(0, 242, 254, 1);
+                box-shadow: 0 0 30px rgba(0, 242, 254, 0.6), inset 0 0 20px rgba(0, 242, 254, 0.3);
+            }
+        }
+        .neon-form-pulse {
+            animation: neonBluePulse 3s infinite ease-in-out;
+        }
+        .terms-box {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-black text-white py-10 px-4 sm:px-6 lg:px-8 relative min-h-screen">
+
+    <div class="max-w-2xl mx-auto bg-gray-950 p-8 rounded-2xl shadow-2xl border-2 neon-form-pulse">
+
+        <div class="text-center mb-8 border-b border-white/10 pb-6">
+            <h1 class="text-3xl font-extrabold tracking-wide text-white">K.A. AGENCY</h1>
+            <p class="text-sm font-semibold text-gray-400 uppercase mt-1">Website Design, Development &amp; Maintenance Agreement</p>
+            <p class="text-xs text-gray-500 mt-3">Please review the details below, read the full terms, and sign electronically to confirm your agreement.</p>
+        </div>
+
+        <!-- ===================== SIGNED CONFIRMATION (hidden until submit) ===================== -->
+        <div id="signedPanel" class="hidden text-center py-10">
+            <i class="fa-solid fa-circle-check text-5xl text-cyan-400 mb-4"></i>
+            <h2 class="text-2xl font-bold text-white mb-2">Contract Signed</h2>
+            <p id="signedTimestamp" class="text-sm text-gray-400 mb-1"></p>
+            <p class="text-xs text-gray-500 max-w-md mx-auto mt-4">
+                A copy of the signed contract has been downloaded to your device, and a record has been sent to K.A. Agency.
+                Please keep the downloaded PDF for your own records.
+            </p>
+        </div>
+
+        <!-- ===================== FORM ===================== -->
+        <form id="contractForm" class="space-y-6">
+
+            <div class="absolute -left-[9999px] top-auto w-px h-px overflow-hidden" aria-hidden="true">
+                <label for="companyWebsite">Leave this field blank</label>
+                <input type="text" id="companyWebsite" name="companyWebsite" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Agreement Date</label>
+                    <input type="text" id="agreementDate" readonly class="w-full px-4 py-2 bg-black border border-white/10 text-gray-400 rounded-lg cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Type of Website</label>
+                    <select id="websiteType" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                        <option class="bg-black">Business / Corporate Website</option>
+                        <option class="bg-black">E-Commerce Store</option>
+                        <option class="bg-black">Portfolio / Personal Website</option>
+                        <option class="bg-black">Landing Page</option>
+                        <option class="bg-black">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2">Client Details (Second Party)</h3>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Full Name *</label>
+                <input type="text" id="clientName" required placeholder="Enter your full name" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Business / Company Name (if applicable)</label>
+                <input type="text" id="clientBusiness" placeholder="Optional" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Address *</label>
+                <input type="text" id="clientAddress" required placeholder="Full address" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Email Address *</label>
+                <input type="email" id="clientEmail" required placeholder="Enter your email address" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Mobile Number *</label>
+                <div class="flex gap-2 items-center">
+                    <select id="mobileCode" required class="px-2 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                        <optgroup label="Jazz" class="bg-black">
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0300</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0301</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0302</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0303</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0304</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0305</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0306</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0307</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0308</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0309</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0320</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0321</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0322</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0323</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0324</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0325</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0326</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0327</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0328</option>
+                            <option class="bg-black" data-carrier="Jazz" data-color="#ED1C24">0329</option>
+                        </optgroup>
+                        <optgroup label="Zong" class="bg-black">
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0310</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0311</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0312</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0313</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0314</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0315</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0316</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0317</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0318</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0319</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0370</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0371</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0372</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0373</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0374</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0375</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0376</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0378</option>
+                            <option class="bg-black" data-carrier="Zong" data-color="#6E2585">0379</option>
+                        </optgroup>
+                        <optgroup label="Ufone" class="bg-black">
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0330</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0331</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0332</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0333</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0334</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0335</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0336</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0337</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0338</option>
+                            <option class="bg-black" data-carrier="Ufone" data-color="#F7941D">0339</option>
+                        </optgroup>
+                        <optgroup label="Telenor" class="bg-black">
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0340</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0341</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0342</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0343</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0344</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0345</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0346</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0347</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0348</option>
+                            <option class="bg-black" data-carrier="Telenor" data-color="#0066B3">0349</option>
+                        </optgroup>
+                        <optgroup label="SCOM (AJK / GB)" class="bg-black">
+                            <option class="bg-black" data-carrier="SCOM" data-color="#6B7280">0355</option>
+                        </optgroup>
+                    </select>
+                    <input type="tel" id="mobileDigits" required inputmode="numeric" maxlength="7" pattern="[0-9]{7}" placeholder="1234567" title="7 digits after the network code" class="flex-1 min-w-0 px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+                <div id="carrierBadge" class="mt-1.5 hidden items-center gap-1.5 text-xs">
+                    <i id="carrierIcon" class="fa-solid fa-signal"></i>
+                    <span id="carrierName" class="font-medium"></span>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">CNIC Number *</label>
+                <input type="text" id="clientCNIC" required maxlength="15" placeholder="00000-0000000-0" title="Format: 00000-0000000-0" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2">Package &amp; Pricing</h3>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Select Package (Budget Range) *</label>
+                <div class="space-y-2 border border-white/10 p-4 rounded-xl bg-black">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 5,000 to PKR 15,000" required class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 5,000 to PKR 15,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 15,000 to PKR 25,000" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 15,000 to PKR 25,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 25,000 to PKR 35,000" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 25,000 to PKR 35,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 35,000 to PKR 45,000" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 35,000 to PKR 45,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 45,000 to PKR 55,000" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 45,000 to PKR 55,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 55,000 to PKR 65,000" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 55,000 to PKR 65,000</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="budget" value="PKR 65,000+ Custom Enterprise" class="accent-cyan-400">
+                        <span class="text-sm text-gray-300">PKR 65,000+ Custom Enterprise</span>
+                    </label>
+                </div>
+                <div id="tierInfo" class="hidden mt-3 border border-cyan-400/30 bg-black p-4 rounded-xl">
+                    <p class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">What's Included</p>
+                    <ul id="tierFeatures" class="text-xs text-gray-300 space-y-1 list-disc list-inside mb-3"></ul>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Total Development Budget (PKR) *</label>
+                    <input type="number" id="agreedBudget" required min="0" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Initial Fee (PKR) *</label>
+                    <input type="number" id="agreedInitialFee" required min="0" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Monthly Maintenance / MRR (PKR) *</label>
+                    <input type="number" id="agreedMRR" required min="0" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Balance Due on Delivery (PKR)</label>
+                    <input type="text" id="balanceDue" readonly class="w-full px-4 py-2 bg-black border border-white/10 text-gray-400 rounded-lg cursor-not-allowed">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Estimated Completion Time (business days) *</label>
+                <input type="number" id="completionDays" required min="1" placeholder="e.g. 10" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+            </div>
+
+            <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2">Terms of Agreement</h3>
+
+            <div class="terms-box border border-white/10 rounded-xl p-4 bg-black text-xs text-gray-400 leading-relaxed space-y-3">
+                <p><strong class="text-gray-200">5. Payment Terms.</strong> The Initial Fee is due upon signing this Agreement, prior to commencement of work. 50% of the Total Development Budget is due upon signing; the remaining 50% is due upon delivery and handover of the completed website. The Monthly Maintenance Fee (MRR) is billed monthly in advance, starting from the website's go-live date. If payment is overdue by more than 7 days, the Agency reserves the right to suspend work and/or temporarily disable the live website until payment is received.</p>
+                <p><strong class="text-gray-200">6. Project Timeline.</strong> The timeline begins once the Initial Fee is received and all required content has been provided by the Client. Delays caused by late submission of content may extend the timeline accordingly.</p>
+                <p><strong class="text-gray-200">7. Revisions.</strong> The number of revision rounds included is determined by the selected package. Additional revisions or scope changes will be quoted and billed separately before work begins on them.</p>
+                <p><strong class="text-gray-200">8. Client Responsibilities.</strong> The Client agrees to provide timely feedback, content, and any access credentials necessary to complete the project within the agreed timeline.</p>
+                <p><strong class="text-gray-200">9. Ownership &amp; IP.</strong> Upon full and final payment, all rights to the completed website design, custom code, and content created specifically for the Client become the property of the Client. Third-party assets remain subject to their own license terms.</p>
+                <p><strong class="text-gray-200">10. Confidentiality.</strong> Both Parties agree to keep confidential any proprietary business information shared during this engagement.</p>
+                <p><strong class="text-gray-200">11. Warranty &amp; Support.</strong> The Agency provides a 30-day bug-fix warranty following launch. Ongoing support beyond this period is covered under the Monthly Maintenance Fee, where opted into.</p>
+                <p><strong class="text-gray-200">12. Termination.</strong> Either Party may terminate this Agreement with 15 days' written notice. The Client remains liable for payment of all work completed up to the termination date.</p>
+                <p><strong class="text-gray-200">13. Limitation of Liability.</strong> The Agency's total liability shall not exceed the total fees actually paid by the Client under this Agreement.</p>
+                <p><strong class="text-gray-200">14. Governing Law.</strong> This Agreement is governed by the laws of Pakistan, unless otherwise agreed in writing by both Parties.</p>
+            </div>
+
+            <label class="flex items-start space-x-3 cursor-pointer pt-2">
+                <input type="checkbox" id="agreeTerms" required class="accent-cyan-400 mt-1">
+                <span class="text-sm text-gray-300">I have read, understood, and agree to be bound by the terms of this Website Design, Development &amp; Maintenance Agreement.</span>
+            </label>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Electronic Signature \u2014 Type your full legal name *</label>
+                <input type="text" id="signatureName" required placeholder="Type your full name to sign" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600 italic">
+                <p class="text-xs text-gray-500 mt-1">By typing your name above and clicking submit, you are electronically signing this Agreement.</p>
+            </div>
+
+            <div>
+                <button type="submit" id="btnSubmit" class="w-full bg-cyan-400 text-black font-bold py-3 px-4 rounded-xl hover:bg-cyan-300 transition duration-200 shadow-lg shadow-cyan-500/35 cursor-pointer">
+                    Sign &amp; Submit Contract
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('agreementDate').value = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        // ---------------- Mobile carrier badge ----------------
+        const mobileCode = document.getElementById('mobileCode');
+        const carrierBadge = document.getElementById('carrierBadge');
+        const carrierIcon = document.getElementById('carrierIcon');
+        const carrierName = document.getElementById('carrierName');
+
+        function updateCarrierBadge() {
+            const opt = mobileCode.selectedOptions[0];
+            carrierBadge.classList.remove('hidden');
+            carrierBadge.classList.add('flex');
+            carrierIcon.style.color = opt.dataset.color;
+            carrierName.style.color = opt.dataset.color;
+            carrierName.textContent = opt.dataset.carrier;
+            mobileCode.style.borderColor = opt.dataset.color;
+        }
+        mobileCode.addEventListener('change', updateCarrierBadge);
+        updateCarrierBadge();
+
+        document.getElementById('mobileDigits').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 7);
+        });
+
+        // ---------------- CNIC auto-format: 00000-0000000-0 ----------------
+        document.getElementById('clientCNIC').addEventListener('input', function() {
+            let digits = this.value.replace(/[^0-9]/g, '').slice(0, 13);
+            let formatted = digits;
+            if (digits.length > 5) formatted = digits.slice(0, 5) + '-' + digits.slice(5);
+            if (digits.length > 12) formatted = digits.slice(0, 5) + '-' + digits.slice(5, 12) + '-' + digits.slice(12);
+            this.value = formatted;
+        });
+
+        // ---------------- Package tiers ----------------
+        const tierDetails = {
+            "PKR 5,000 to PKR 15,000": {
+                initialFeeLabel: "PKR 1,500 (one-time setup)", mrrLabel: "PKR 1,000 - 1,500 / month",
+                suggestedBudget: 10000, suggestedInitialFee: 1500, suggestedMRR: 1000,
+                features: ["Single-page business website (up to 4 sections)", "Basic product showcase (up to 5 items) with WhatsApp ordering", "Mobile responsive design", "Basic contact form", "1 round of revisions"]
+            },
+            "PKR 15,000 to PKR 25,000": {
+                initialFeeLabel: "PKR 2,000 (one-time setup)", mrrLabel: "PKR 1,500 - 2,500 / month",
+                suggestedBudget: 20000, suggestedInitialFee: 2000, suggestedMRR: 1500,
+                features: ["Up to 5 pages (Home, About, Services, Gallery, Contact)", "Basic online store (up to 10 products) with WhatsApp/COD ordering", "Basic on-page SEO setup", "Social media integration", "2 rounds of revisions"]
+            },
+            "PKR 25,000 to PKR 35,000": {
+                initialFeeLabel: "PKR 2,500 (one-time setup)", mrrLabel: "PKR 2,500 - 3,500 / month",
+                suggestedBudget: 30000, suggestedInitialFee: 2500, suggestedMRR: 2500,
+                features: ["Up to 8 pages, fully custom design", "Online store (up to 20 products) with cash-on-delivery checkout", "Google Maps integration", "On-page SEO (meta tags, sitemap)", "3 rounds of revisions"]
+            },
+            "PKR 35,000 to PKR 45,000": {
+                initialFeeLabel: "PKR 3,500 (one-time setup)", mrrLabel: "PKR 3,500 - 5,000 / month",
+                suggestedBudget: 40000, suggestedInitialFee: 3500, suggestedMRR: 3500,
+                features: ["E-commerce storefront (up to 40 products)", "Full cash-on-delivery checkout flow", "Admin panel for managing products/orders", "Mobile responsive storefront"]
+            },
+            "PKR 45,000 to PKR 55,000": {
+                initialFeeLabel: "PKR 4,500 (one-time setup)", mrrLabel: "PKR 5,000 - 7,000 / month",
+                suggestedBudget: 50000, suggestedInitialFee: 4500, suggestedMRR: 5000,
+                features: ["E-commerce storefront, unlimited products", "Category & filter system", "Customer accounts with order history", "Basic sales analytics dashboard"]
+            },
+            "PKR 55,000 to PKR 65,000": {
+                initialFeeLabel: "PKR 6,000 (one-time setup)", mrrLabel: "PKR 7,000 - 10,000 / month",
+                suggestedBudget: 60000, suggestedInitialFee: 6000, suggestedMRR: 7000,
+                features: ["Custom e-commerce / web application (multi-vendor, bookings, subscriptions)", "Database-backed backend", "Admin dashboard with reporting", "Payment gateway / SMS-WhatsApp API integration"]
+            },
+            "PKR 65,000+ Custom Enterprise": {
+                initialFeeLabel: "Custom quote, starting from PKR 8,000 (one-time setup)", mrrLabel: "Custom quote, starting from PKR 10,000 / month",
+                suggestedBudget: 65000, suggestedInitialFee: 8000, suggestedMRR: 10000,
+                features: ["Enterprise-grade custom e-commerce platform", "Scalable cloud architecture", "Dedicated support & priority bug fixes", "Custom third-party integrations (CRM, ERP, payment gateways)"]
+            }
+        };
+
+        const tierInfo = document.getElementById('tierInfo');
+        const tierFeatures = document.getElementById('tierFeatures');
+        const agreedBudget = document.getElementById('agreedBudget');
+        const agreedInitialFee = document.getElementById('agreedInitialFee');
+        const agreedMRR = document.getElementById('agreedMRR');
+        const balanceDue = document.getElementById('balanceDue');
+
+        function recalcBalance() {
+            const budget = parseFloat(agreedBudget.value) || 0;
+            const fee = parseFloat(agreedInitialFee.value) || 0;
+            balanceDue.value = 'PKR ' + Math.max(budget - fee, 0).toLocaleString();
+        }
+
+        document.querySelectorAll('input[name="budget"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const detail = tierDetails[this.value];
+                if (!detail) return;
+                tierFeatures.innerHTML = detail.features.map(f => `<li>${f}</li>`).join('');
+                tierInfo.classList.remove('hidden');
+                agreedBudget.value = detail.suggestedBudget;
+                agreedInitialFee.value = detail.suggestedInitialFee;
+                agreedMRR.value = detail.suggestedMRR;
+                recalcBalance();
+            });
+        });
+        agreedBudget.addEventListener('input', recalcBalance);
+        agreedInitialFee.addEventListener('input', recalcBalance);
+
+        // ---------------- Submit / Sign ----------------
+        document.getElementById('contractForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btnSubmit = document.getElementById('btnSubmit');
+            const honeypot = document.getElementById('companyWebsite').value;
+
+            const selectedBudgetInput = document.querySelector('input[name="budget"]:checked');
+            const selectedBudget = selectedBudgetInput ? selectedBudgetInput.value : 'Not specified';
+            const selectedTier = tierDetails[selectedBudget];
+
+            if (honeypot) {
+                showSignedPanel(new Date());
+                return;
+            }
+
+            const contractData = {
+                agreementDate: document.getElementById('agreementDate').value,
+                websiteType: document.getElementById('websiteType').value,
+                clientName: document.getElementById('clientName').value,
+                clientBusiness: document.getElementById('clientBusiness').value || 'N/A',
+                clientAddress: document.getElementById('clientAddress').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                clientMobile: `${mobileCode.value}-${document.getElementById('mobileDigits').value}`,
+                clientCNIC: document.getElementById('clientCNIC').value,
+                selectedPackage: selectedBudget,
+                packageIncludes: selectedTier ? selectedTier.features.join('; ') : 'N/A',
+                agreedBudget: agreedBudget.value,
+                agreedInitialFee: agreedInitialFee.value,
+                agreedMRR: agreedMRR.value,
+                balanceDue: balanceDue.value,
+                completionDays: document.getElementById('completionDays').value,
+                signatureName: document.getElementById('signatureName').value,
+                signedAt: new Date().toISOString(),
+                companyWebsite: honeypot
+            };
+
+            const originalBtnText = btnSubmit.textContent;
+            btnSubmit.disabled = true;
+            btnSubmit.classList.add('opacity-60', 'cursor-not-allowed');
+            btnSubmit.textContent = 'Submitting...';
+
+            try {
+                const pdfDataUri = generateContractPDF(contractData);
+                const pdfBase64 = pdfDataUri.split(',')[1];
+
+                try {
+                    const response = await fetch('/api/send-contract', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...contractData, pdfBase64 })
+                    });
+                    if (!response.ok) {
+                        console.error('Contract record email failed:', await response.json());
+                    }
+                } catch (err) {
+                    console.error('Network error sending contract record:', err);
+                }
+
+                showSignedPanel(new Date(contractData.signedAt));
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.classList.remove('opacity-60', 'cursor-not-allowed');
+                btnSubmit.textContent = originalBtnText;
+            }
+        });
+
+        function showSignedPanel(date) {
+            document.getElementById('contractForm').classList.add('hidden');
+            document.getElementById('signedPanel').classList.remove('hidden');
+            document.getElementById('signedTimestamp').textContent =
+                'Signed on ' + date.toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' });
+        }
+
+        // ---------------- PDF generation ----------------
+        function generateContractPDF(data) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const marginX = 20;
+            let y = 20;
+
+            const ACCENT = [14, 116, 144];
+            const ACCENT_LIGHT = [224, 247, 250];
+            const DARK = [17, 17, 17];
+            const GRAY = [85, 85, 85];
+
+            function newPageIfNeeded(neededHeight) {
+                if (y + neededHeight > pageH - 18) {
+                    doc.addPage();
+                    drawTopBar();
+                    y = 20;
+                }
+            }
+
+            function drawTopBar() {
+                doc.setFillColor(...ACCENT);
+                doc.rect(0, 0, pageW, 2.2, 'F');
+            }
+
+            function heading(text) {
+                newPageIfNeeded(10);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11.5);
+                doc.setTextColor(...ACCENT);
+                doc.text(text, marginX, y);
+                y += 6;
+            }
+
+            function paragraph(text) {
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(9.5);
+                doc.setTextColor(...DARK);
+                const lines = doc.splitTextToSize(text, pageW - marginX * 2);
+                newPageIfNeeded(lines.length * 4.6 + 4);
+                doc.text(lines, marginX, y);
+                y += lines.length * 4.6 + 4;
+            }
+
+            function fieldLine(label, value) {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(9.5);
+                doc.setTextColor(...DARK);
+                newPageIfNeeded(6);
+                doc.text(label + ':', marginX, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(String(value), marginX + 62, y);
+                y += 6;
+            }
+
+            drawTopBar();
+
+            // Title
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(19);
+            doc.setTextColor(...DARK);
+            doc.text('K.A. AGENCY', pageW / 2, y, { align: 'center' });
+            y += 6.5;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...GRAY);
+            doc.text('WEBSITE DESIGN, DEVELOPMENT & MAINTENANCE AGREEMENT', pageW / 2, y, { align: 'center' });
+            y += 4;
+            doc.setDrawColor(...ACCENT);
+            doc.setLineWidth(0.8);
+            doc.line(marginX, y, pageW - marginX, y);
+            y += 8;
+
+            fieldLine('Agreement Date', data.agreementDate);
+            fieldLine('Type of Website', data.websiteType);
+            y += 2;
+
+            heading('1. PARTIES');
+            fieldLine('First Party', 'K.A. Agency');
+            fieldLine('Second Party (Client)', data.clientName);
+            fieldLine('Business / Company', data.clientBusiness);
+            fieldLine('Address', data.clientAddress);
+            fieldLine('Mobile', data.clientMobile);
+            fieldLine('Email', data.clientEmail);
+            fieldLine('CNIC Number', data.clientCNIC);
+            y += 2;
+
+            heading('2. SELECTED PACKAGE');
+            fieldLine('Budget Range', data.selectedPackage);
+            paragraph('Includes: ' + data.packageIncludes);
+            y += 1;
+
+            heading('3. AGREED FEES');
+            fieldLine('Total Development Budget (PKR)', data.agreedBudget);
+            fieldLine('Initial Fee (PKR)', data.agreedInitialFee);
+            fieldLine('Monthly Maintenance / MRR (PKR)', data.agreedMRR);
+            fieldLine('Balance Due on Delivery', data.balanceDue);
+            fieldLine('Estimated Completion (business days)', data.completionDays);
+            y += 2;
+
+            const clauses = [
+                ['4. PAYMENT TERMS', 'The Initial Fee is due upon signing this Agreement, prior to commencement of work. 50% of the Total Development Budget is due upon signing; the remaining 50% is due upon delivery and handover of the completed website. The Monthly Maintenance Fee (MRR) is billed monthly in advance, starting from the website\'s go-live date. Accepted payment methods include bank transfer, JazzCash, and EasyPaisa, unless otherwise agreed in writing. If payment is overdue by more than 7 days, the Agency reserves the right to suspend work and/or temporarily disable the live website until payment is received.'],
+                ['5. PROJECT TIMELINE', 'This timeline begins once the Initial Fee is received and all required content (text, images, product details, and login credentials where applicable) has been provided by the Client. Delays caused by late submission of content by the Client may extend this timeline accordingly.'],
+                ['6. REVISIONS & CHANGE REQUESTS', 'The number of revision rounds included is determined by the selected package. Additional revisions beyond the included rounds, or changes to agreed scope, will be quoted and billed separately before work begins on them.'],
+                ['7. CLIENT RESPONSIBILITIES', 'The Client agrees to provide timely feedback, required content, and any access credentials necessary for the Agency to complete the project within the agreed timeline. Delays in providing these materials may result in a corresponding delay to the project timeline.'],
+                ['8. OWNERSHIP & INTELLECTUAL PROPERTY', 'Upon receipt of full and final payment, all rights to the completed website design, custom code, and content created specifically for the Client become the property of the Client. Third-party assets (such as stock photography, plugins, themes, or hosting/domain accounts) remain subject to their own respective license terms and are not transferred under this Agreement.'],
+                ['9. CONFIDENTIALITY', 'Both Parties agree to keep confidential any proprietary business information, credentials, or data shared during the course of this engagement, and not to disclose such information to any third party without prior written consent, except as required by law.'],
+                ['10. WARRANTY & SUPPORT', 'The Agency provides a 30-day bug-fix warranty following website launch, covering defects in the delivered work at no additional cost. Ongoing support beyond this warranty period is covered under the Monthly Maintenance Fee (MRR), where opted into by the Client.'],
+                ['11. TERMINATION', 'Either Party may terminate this Agreement by providing 15 days\' written notice to the other Party. In the event of termination, the Client remains liable for payment of all work completed, and fees incurred, up to the effective date of termination.'],
+                ['12. LIMITATION OF LIABILITY', 'The Agency\'s total liability arising out of or in connection with this Agreement shall not exceed the total fees actually paid by the Client under this Agreement.'],
+                ['13. GOVERNING LAW', 'This Agreement shall be governed by and construed in accordance with the laws of Pakistan, unless otherwise agreed in writing by both Parties.'],
+            ];
+            clauses.forEach(([title, text]) => {
+                heading(title);
+                paragraph(text);
+            });
+
+            // Signature section
+            newPageIfNeeded(40);
+            heading('14. ELECTRONIC SIGNATURE');
+            doc.setFillColor(...ACCENT_LIGHT);
+            doc.rect(marginX, y, pageW - marginX * 2, 24, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.rect(marginX, y, pageW - marginX * 2, 24);
+            y += 6;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...DARK);
+            doc.text('Signed by (typed name):', marginX + 4, y);
+            doc.setFont('helvetica', 'italic');
+            doc.text(data.signatureName, marginX + 55, y);
+            y += 6;
+            doc.setFont('helvetica', 'bold');
+            doc.text('CNIC Number:', marginX + 4, y);
+            doc.setFont('helvetica', 'normal');
+            doc.text(data.clientCNIC, marginX + 55, y);
+            y += 6;
+            doc.setFont('helvetica', 'bold');
+            doc.text('Signed at (timestamp):', marginX + 4, y);
+            doc.setFont('helvetica', 'normal');
+            doc.text(new Date(data.signedAt).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'medium' }), marginX + 55, y);
+            y += 10;
+
+            paragraph('This document was signed electronically by typing the signatory\'s full legal name and submitting this form. This is a general-purpose contract template and has not been reviewed by a lawyer.');
+
+            // Footer with page numbers
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.5);
+                doc.setTextColor(...GRAY);
+                doc.text('K.A. Agency \u2013 Website Design, Development & Maintenance Agreement', marginX, pageH - 10);
+                doc.text('Page ' + i + ' of ' + pageCount, pageW - marginX, pageH - 10, { align: 'right' });
+            }
+
+            doc.save(`KA_Agency_Contract_${data.clientName.replace(/\s+/g, '_')}.pdf`);
+            return doc.output('datauristring');
+        }
+    </script>
+</body>
+</html>
