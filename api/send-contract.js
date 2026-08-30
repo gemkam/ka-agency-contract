@@ -52,7 +52,7 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 from: 'K.A. Agency Contracts <onboarding@resend.dev>',
-                to: ['gemkam@gmail.com'],
+                to: ['kzstech000@gmail.com'],
                 subject: `Signed Contract: ${clientName}`,
                 html,
                 attachments: pdfBase64 ? [{
