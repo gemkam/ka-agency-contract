@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     const {
         agreementDate, websiteType, agencyRep, agencySignedAt, clientName, clientBusiness, clientAddress,
         clientEmail, clientMobile, clientCNIC, selectedPackage, packageIncludes,
-        agreedBudget, agreedInitialFee, agreedMRR, balanceDue, completionDays,
+        agreedBudget, agreedInitialFee, agreedMRR, balanceDue, completionDays, contractDuration,
         signatureName, signedAt, companyWebsite, pdfBase64
     } = req.body;
 
@@ -40,6 +40,7 @@ export default async function handler(req, res) {
         <p><strong>Monthly Maintenance (MRR):</strong> PKR ${agreedMRR}</p>
         <p><strong>Balance Due on Delivery:</strong> ${balanceDue}</p>
         <p><strong>Estimated Completion:</strong> ${completionDays} business days</p>
+        <p><strong>Contract Duration:</strong> ${contractDuration}</p>
         <hr>
         <h3>Client Signature</h3>
         <p><strong>Signed by:</strong> ${signatureName}</p>
