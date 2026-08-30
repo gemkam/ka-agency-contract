@@ -407,6 +407,9 @@
             el.classList.add('opacity-60', 'cursor-not-allowed');
         }
 
+        let presetAgencyRep = null;
+        let presetAgencySignedAt = null;
+
         function applyAgencyPresetsFromURL() {
             const params = new URLSearchParams(window.location.search);
             const tierNum = parseInt(params.get('tier'), 10);
@@ -415,6 +418,8 @@
             const overrideMRR = params.get('mrr');
             const overrideDays = params.get('days');
             const overrideType = params.get('type');
+            presetAgencyRep = params.get('agencyRep');
+            presetAgencySignedAt = params.get('agencySignedAt');
             let anyLocked = false;
 
             if (tierNum >= 1 && tierNum <= 7) {
@@ -459,6 +464,14 @@
                 note.innerHTML = '<i class="fa-solid fa-lock mr-1"></i>These terms were set by K.A. Agency for this agreement and can\'t be changed here. Contact K.A. Agency if something looks wrong.';
                 tierInfo.insertAdjacentElement('afterend', note);
             }
+
+            if (presetAgencyRep && presetAgencySignedAt) {
+                const banner = document.createElement('div');
+                banner.className = 'mb-6 border border-cyan-400/30 bg-cyan-950/30 rounded-xl p-3 text-xs text-cyan-300 flex items-start gap-2';
+                const signedDate = new Date(presetAgencySignedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+                banner.innerHTML = `<i class="fa-solid fa-circle-check mt-0.5"></i><span>Already signed by <strong>${presetAgencyRep}</strong> on behalf of K.A. Agency, on ${signedDate}. Review the terms below and sign your part to complete the agreement.</span>`;
+                document.getElementById('contractForm').insertAdjacentElement('afterbegin', banner);
+            }
         }
 
         applyAgencyPresetsFromURL();
@@ -482,6 +495,8 @@
             const contractData = {
                 agreementDate: document.getElementById('agreementDate').value,
                 websiteType: document.getElementById('websiteType').value,
+                agencyRep: presetAgencyRep || '',
+                agencySignedAt: presetAgencySignedAt || '',
                 clientName: document.getElementById('clientName').value,
                 clientBusiness: document.getElementById('clientBusiness').value || 'N/A',
                 clientAddress: document.getElementById('clientAddress').value,
@@ -627,6 +642,7 @@
 
             heading('1. PARTIES');
             fieldLine('First Party', 'K.A. Agency');
+            fieldLine('Represented by', data.agencyRep || '________________________');
             fieldLine('Second Party (Client)', data.clientName);
             fieldLine('Business / Company', data.clientBusiness);
             fieldLine('Address', data.clientAddress);
@@ -666,16 +682,54 @@
             });
 
             // Signature section
-            newPageIfNeeded(40);
-            heading('14. ELECTRONIC SIGNATURE');
+            const agencyBoxHeight = 18;
+            newPageIfNeeded(agencyBoxHeight + 24 + 16);
+            heading('14. ELECTRONIC SIGNATURES');
+
+            // First Party signature box
+            const agencyBoxTop = y;
             doc.setFillColor(...ACCENT_LIGHT);
-            doc.rect(marginX, y, pageW - marginX * 2, 24, 'F');
+            doc.rect(marginX, y, pageW - marginX * 2, agencyBoxHeight, 'F');
             doc.setDrawColor(200, 200, 200);
-            doc.rect(marginX, y, pageW - marginX * 2, 24);
+            doc.rect(marginX, y, pageW - marginX * 2, agencyBoxHeight);
             y += 6;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(9.5);
             doc.setTextColor(...DARK);
+            doc.text('FIRST PARTY \u2013 K.A. AGENCY', marginX + 4, y);
+            y += 6;
+            if (data.agencyRep) {
+                doc.setFont('helvetica', 'bold');
+                doc.text('Signed by:', marginX + 4, y);
+                doc.setFont('helvetica', 'italic');
+                doc.text(data.agencyRep, marginX + 45, y);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Signed at:', marginX + 105, y);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8.5);
+                doc.text(new Date(data.agencySignedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }), marginX + 130, y);
+                doc.setFontSize(9.5);
+            } else {
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(...GRAY);
+                doc.text('Not signed by K.A. Agency for this link.', marginX + 4, y);
+                doc.setTextColor(...DARK);
+            }
+            y = agencyBoxTop + agencyBoxHeight + 8;
+
+            // Second Party signature box
+            const clientBoxHeight = 30;
+            const clientBoxTop = y;
+            doc.setFillColor(...ACCENT_LIGHT);
+            doc.rect(marginX, y, pageW - marginX * 2, clientBoxHeight, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.rect(marginX, y, pageW - marginX * 2, clientBoxHeight);
+            y += 6;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            doc.setTextColor(...DARK);
+            doc.text('SECOND PARTY \u2013 CLIENT', marginX + 4, y);
+            y += 6;
             doc.text('Signed by (typed name):', marginX + 4, y);
             doc.setFont('helvetica', 'italic');
             doc.text(data.signatureName, marginX + 55, y);
@@ -689,9 +743,9 @@
             doc.text('Signed at (timestamp):', marginX + 4, y);
             doc.setFont('helvetica', 'normal');
             doc.text(new Date(data.signedAt).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'medium' }), marginX + 55, y);
-            y += 10;
+            y = clientBoxTop + clientBoxHeight + 8;
 
-            paragraph('This document was signed electronically by typing the signatory\'s full legal name and submitting this form. This is a general-purpose contract template and has not been reviewed by a lawyer.');
+            paragraph('This document was signed electronically by each party typing their full legal name and submitting this form. This is a general-purpose contract template and has not been reviewed by a lawyer.');
 
             // Footer with page numbers
             const pageCount = doc.internal.getNumberOfPages();
