@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     }
 
     const {
-        agreementDate, websiteType, clientName, clientBusiness, clientAddress,
+        agreementDate, websiteType, agencyRep, agencySignedAt, clientName, clientBusiness, clientAddress,
         clientEmail, clientMobile, clientCNIC, selectedPackage, packageIncludes,
         agreedBudget, agreedInitialFee, agreedMRR, balanceDue, completionDays,
         signatureName, signedAt, companyWebsite, pdfBase64
@@ -19,6 +19,10 @@ export default async function handler(req, res) {
         <h2>Signed Contract Record</h2>
         <p><strong>Agreement Date:</strong> ${agreementDate}</p>
         <p><strong>Type of Website:</strong> ${websiteType}</p>
+        <hr>
+        <h3>K.A. Agency (First Party)</h3>
+        <p><strong>Signed by:</strong> ${agencyRep || 'Not signed for this link'}</p>
+        ${agencySignedAt ? `<p><strong>Signed at:</strong> ${new Date(agencySignedAt).toLocaleString()}</p>` : ''}
         <hr>
         <h3>Client (Second Party)</h3>
         <p><strong>Name:</strong> ${clientName}</p>
@@ -37,7 +41,7 @@ export default async function handler(req, res) {
         <p><strong>Balance Due on Delivery:</strong> ${balanceDue}</p>
         <p><strong>Estimated Completion:</strong> ${completionDays} business days</p>
         <hr>
-        <h3>Signature</h3>
+        <h3>Client Signature</h3>
         <p><strong>Signed by:</strong> ${signatureName}</p>
         <p><strong>Signed at:</strong> ${new Date(signedAt).toLocaleString()}</p>
         <p>The signed contract PDF is attached to this email.</p>
