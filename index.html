@@ -52,6 +52,93 @@
         </div>
 
         <!-- ===================== FORM ===================== -->
+        <!-- ===================== AGENCY SETUP (Step 1 — shown only when opening the bare URL) ===================== -->
+        <div id="agencySetupPanel" class="hidden">
+            <p class="text-xs text-gray-500 mb-4 border border-white/10 rounded-xl p-3 bg-black">
+                <i class="fa-solid fa-lock mr-1 text-cyan-400"></i>Internal step — not for clients. Set the agreed terms, sign as First Party, then copy the link below and send it to the client.
+            </p>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Package (Budget Range)</label>
+                    <select id="setupTier" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                        <option value="" class="bg-black">-- Let client choose (don't lock) --</option>
+                        <option value="1" class="bg-black">1. PKR 5,000 to PKR 15,000</option>
+                        <option value="2" class="bg-black">2. PKR 15,000 to PKR 25,000</option>
+                        <option value="3" class="bg-black">3. PKR 25,000 to PKR 35,000</option>
+                        <option value="4" class="bg-black">4. PKR 35,000 to PKR 45,000</option>
+                        <option value="5" class="bg-black">5. PKR 45,000 to PKR 55,000</option>
+                        <option value="6" class="bg-black">6. PKR 55,000 to PKR 65,000</option>
+                        <option value="7" class="bg-black">7. PKR 65,000+ Custom Enterprise</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Total Budget (PKR)</label>
+                        <input type="number" id="setupBudget" placeholder="e.g. 30000" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Initial Fee (PKR)</label>
+                        <input type="number" id="setupFee" placeholder="e.g. 2800" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Monthly MRR (PKR)</label>
+                        <input type="number" id="setupMRR" placeholder="e.g. 3000" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Completion (business days)</label>
+                        <input type="number" id="setupDays" placeholder="e.g. 12" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Type of Website</label>
+                    <select id="setupType" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                        <option value="" class="bg-black">-- Let client choose (don't lock) --</option>
+                        <option value="Business / Corporate Website" class="bg-black">Business / Corporate Website</option>
+                        <option value="E-Commerce Store" class="bg-black">E-Commerce Store</option>
+                        <option value="Portfolio / Personal Website" class="bg-black">Portfolio / Personal Website</option>
+                        <option value="Landing Page" class="bg-black">Landing Page</option>
+                        <option value="Other" class="bg-black">Other</option>
+                    </select>
+                </div>
+
+                <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2 border-t border-white/10">First Party Sign-off (K.A. Agency)</h3>
+                <p class="text-xs text-gray-500 -mt-3">Your signature becomes part of the final contract the client signs.</p>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Representative Name *</label>
+                    <input type="text" id="setupAgencyRep" placeholder="Type your full name to sign as K.A. Agency" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600 italic">
+                </div>
+
+                <label class="flex items-start space-x-3 cursor-pointer">
+                    <input type="checkbox" id="setupAgree" class="accent-cyan-400 mt-1">
+                    <span class="text-sm text-gray-300">I confirm I am signing this agreement on behalf of K.A. Agency, and the terms set above are correct.</span>
+                </label>
+                <p id="setupSignStatus" class="text-xs text-amber-400"></p>
+
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Client Email (optional, to send the link directly)</label>
+                    <input type="email" id="setupClientEmail" placeholder="client@example.com" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
+                </div>
+
+                <div class="pt-2">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Generated Link</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="setupGeneratedLink" readonly class="flex-1 min-w-0 px-4 py-2 bg-black border border-cyan-400/40 text-cyan-300 rounded-lg text-sm">
+                        <button id="setupCopyBtn" type="button" class="bg-cyan-400 text-black font-bold px-4 rounded-lg hover:bg-cyan-300 transition shrink-0">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+                    <p id="setupCopyStatus" class="text-xs text-gray-500 mt-1 h-4"></p>
+                    <a id="setupEmailLinkBtn" href="#" class="inline-flex items-center gap-2 mt-2 text-sm text-cyan-400 hover:text-cyan-300 hidden">
+                        <i class="fa-solid fa-envelope"></i>Open in your email app, addressed to the client
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <form id="contractForm" class="space-y-6">
 
             <div class="absolute -left-[9999px] top-auto w-px h-px overflow-hidden" aria-hidden="true">
@@ -474,7 +561,103 @@
             }
         }
 
-        applyAgencyPresetsFromURL();
+        // ---------------- Agency Setup panel (Step 1) ----------------
+        const setupTier = document.getElementById('setupTier');
+        const setupBudget = document.getElementById('setupBudget');
+        const setupFee = document.getElementById('setupFee');
+        const setupMRR = document.getElementById('setupMRR');
+        const setupDays = document.getElementById('setupDays');
+        const setupType = document.getElementById('setupType');
+        const setupAgencyRep = document.getElementById('setupAgencyRep');
+        const setupAgree = document.getElementById('setupAgree');
+        const setupSignStatus = document.getElementById('setupSignStatus');
+        const setupClientEmail = document.getElementById('setupClientEmail');
+        const setupGeneratedLink = document.getElementById('setupGeneratedLink');
+        const setupCopyBtn = document.getElementById('setupCopyBtn');
+        const setupCopyStatus = document.getElementById('setupCopyStatus');
+        const setupEmailLinkBtn = document.getElementById('setupEmailLinkBtn');
+
+        let fixedSetupSignedAt = null;
+
+        function setupUpdateLink() {
+            const params = new URLSearchParams();
+            if (setupTier.value) {
+                params.set('tier', setupTier.value);
+                const detail = tierDetails[tierKeysInOrder[parseInt(setupTier.value, 10) - 1]];
+                if (detail) {
+                    if (!setupBudget.value) setupBudget.placeholder = 'e.g. ' + detail.suggestedBudget;
+                    if (!setupFee.value) setupFee.placeholder = 'e.g. ' + detail.suggestedInitialFee;
+                    if (!setupMRR.value) setupMRR.placeholder = 'e.g. ' + detail.suggestedMRR;
+                }
+            }
+            if (setupBudget.value) params.set('budget', setupBudget.value);
+            if (setupFee.value) params.set('fee', setupFee.value);
+            if (setupMRR.value) params.set('mrr', setupMRR.value);
+            if (setupDays.value) params.set('days', setupDays.value);
+            if (setupType.value) params.set('type', setupType.value);
+
+            const repName = setupAgencyRep.value.trim();
+            const agreed = setupAgree.checked;
+
+            if (!repName || !agreed) {
+                fixedSetupSignedAt = null;
+                setupGeneratedLink.value = '';
+                setupSignStatus.textContent = 'Type your name and check the confirmation box above to generate a sendable link.';
+                return;
+            }
+
+            if (!fixedSetupSignedAt) {
+                fixedSetupSignedAt = new Date().toISOString();
+            }
+
+            setupSignStatus.textContent = '';
+            params.set('agencyRep', repName);
+            params.set('agencySignedAt', fixedSetupSignedAt);
+
+            const baseUrl = window.location.origin + window.location.pathname;
+            const query = params.toString();
+            setupGeneratedLink.value = baseUrl + (query ? '?' + query : '');
+
+            const clientEmail = setupClientEmail.value.trim();
+            if (clientEmail) {
+                const subject = encodeURIComponent('Your K.A. Agency Website Contract');
+                const body = encodeURIComponent(
+                    `Hello,\n\nPlease review and sign your website development contract using the link below:\n\n${setupGeneratedLink.value}\n\nOnce signed, you'll get an emailed copy for your own records.\n\nThank you,\nK.A. Agency`
+                );
+                setupEmailLinkBtn.href = `mailto:${clientEmail}?subject=${subject}&body=${body}`;
+                setupEmailLinkBtn.classList.remove('hidden');
+            } else {
+                setupEmailLinkBtn.classList.add('hidden');
+            }
+        }
+
+        [setupTier, setupBudget, setupFee, setupMRR, setupDays, setupType, setupAgencyRep, setupAgree, setupClientEmail].forEach(el => {
+            el.addEventListener('input', setupUpdateLink);
+            el.addEventListener('change', setupUpdateLink);
+        });
+
+        setupCopyBtn.addEventListener('click', async function() {
+            try {
+                await navigator.clipboard.writeText(setupGeneratedLink.value);
+                setupCopyStatus.textContent = 'Copied to clipboard!';
+                setTimeout(() => { setupCopyStatus.textContent = ''; }, 2000);
+            } catch (err) {
+                setupGeneratedLink.select();
+                setupCopyStatus.textContent = 'Press Ctrl+C / Cmd+C to copy.';
+            }
+        });
+
+        // ---------------- Decide which panel to show ----------------
+        const bareParams = new URLSearchParams(window.location.search);
+        if (bareParams.has('agencyRep') && bareParams.has('agencySignedAt')) {
+            // This is a link the agency already generated and signed — show the client form.
+            applyAgencyPresetsFromURL();
+        } else {
+            // Bare URL — this is the agency setting up a new contract link.
+            document.getElementById('contractForm').classList.add('hidden');
+            document.getElementById('agencySetupPanel').classList.remove('hidden');
+            setupUpdateLink();
+        }
 
         // ---------------- Submit / Sign ----------------
         document.getElementById('contractForm').addEventListener('submit', async function(e) {
