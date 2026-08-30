@@ -104,6 +104,19 @@
                     </select>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Contract Duration</label>
+                    <select id="setupDuration" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                        <option value="" class="bg-black">-- Let client choose (don't lock) --</option>
+                        <option value="6 Months" class="bg-black">6 Months</option>
+                        <option value="1 Year" class="bg-black">1 Year</option>
+                        <option value="2 Years" class="bg-black">2 Years</option>
+                        <option value="3 Years" class="bg-black">3 Years</option>
+                        <option value="4 Years" class="bg-black">4 Years</option>
+                        <option value="5 Years" class="bg-black">5 Years</option>
+                    </select>
+                </div>
+
                 <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2 border-t border-white/10">First Party Sign-off (K.A. Agency)</h3>
                 <p class="text-xs text-gray-500 -mt-3">Your signature becomes part of the final contract the client signs.</p>
 
@@ -337,6 +350,19 @@
                 <input type="number" id="completionDays" required min="1" placeholder="e.g. 10" class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none placeholder-gray-600">
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Contract Duration *</label>
+                <select id="contractDuration" required class="w-full px-4 py-2 bg-black border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-cyan-400 focus:outline-none">
+                    <option value="" class="bg-black" disabled selected>-- Select duration --</option>
+                    <option value="6 Months" class="bg-black">6 Months</option>
+                    <option value="1 Year" class="bg-black">1 Year</option>
+                    <option value="2 Years" class="bg-black">2 Years</option>
+                    <option value="3 Years" class="bg-black">3 Years</option>
+                    <option value="4 Years" class="bg-black">4 Years</option>
+                    <option value="5 Years" class="bg-black">5 Years</option>
+                </select>
+            </div>
+
             <h3 class="text-sm font-bold text-cyan-400 uppercase tracking-wider pt-2">Terms of Agreement</h3>
 
             <div class="terms-box border border-white/10 rounded-xl p-4 bg-black text-xs text-gray-400 leading-relaxed space-y-3">
@@ -505,6 +531,7 @@
             const overrideMRR = params.get('mrr');
             const overrideDays = params.get('days');
             const overrideType = params.get('type');
+            const overrideDuration = params.get('duration');
             presetAgencyRep = params.get('agencyRep');
             presetAgencySignedAt = params.get('agencySignedAt');
             let anyLocked = false;
@@ -545,6 +572,15 @@
                 anyLocked = true;
             }
 
+            if (overrideDuration) {
+                const durationField = document.getElementById('contractDuration');
+                for (const opt of durationField.options) {
+                    if (opt.value === overrideDuration) { durationField.value = overrideDuration; break; }
+                }
+                lockField(durationField);
+                anyLocked = true;
+            }
+
             if (anyLocked) {
                 const note = document.createElement('p');
                 note.className = 'text-xs text-cyan-400 mt-2';
@@ -568,6 +604,7 @@
         const setupMRR = document.getElementById('setupMRR');
         const setupDays = document.getElementById('setupDays');
         const setupType = document.getElementById('setupType');
+        const setupDuration = document.getElementById('setupDuration');
         const setupAgencyRep = document.getElementById('setupAgencyRep');
         const setupAgree = document.getElementById('setupAgree');
         const setupSignStatus = document.getElementById('setupSignStatus');
@@ -595,6 +632,7 @@
             if (setupMRR.value) params.set('mrr', setupMRR.value);
             if (setupDays.value) params.set('days', setupDays.value);
             if (setupType.value) params.set('type', setupType.value);
+            if (setupDuration.value) params.set('duration', setupDuration.value);
 
             const repName = setupAgencyRep.value.trim();
             const agreed = setupAgree.checked;
@@ -631,7 +669,7 @@
             }
         }
 
-        [setupTier, setupBudget, setupFee, setupMRR, setupDays, setupType, setupAgencyRep, setupAgree, setupClientEmail].forEach(el => {
+        [setupTier, setupBudget, setupFee, setupMRR, setupDays, setupType, setupDuration, setupAgencyRep, setupAgree, setupClientEmail].forEach(el => {
             el.addEventListener('input', setupUpdateLink);
             el.addEventListener('change', setupUpdateLink);
         });
@@ -693,6 +731,7 @@
                 agreedMRR: agreedMRR.value,
                 balanceDue: balanceDue.value,
                 completionDays: document.getElementById('completionDays').value,
+                contractDuration: document.getElementById('contractDuration').value,
                 signatureName: document.getElementById('signatureName').value,
                 signedAt: new Date().toISOString(),
                 companyWebsite: honeypot
@@ -845,6 +884,7 @@
             fieldLine('Monthly Maintenance / MRR (PKR)', data.agreedMRR);
             fieldLine('Balance Due on Delivery', data.balanceDue);
             fieldLine('Estimated Completion (business days)', data.completionDays);
+            fieldLine('Contract Duration', data.contractDuration);
             y += 2;
 
             const clauses = [
